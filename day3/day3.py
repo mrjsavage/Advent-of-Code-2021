@@ -1,42 +1,58 @@
-n = 0
-count = [0]*12
-ogen = []
-co2 = []
-with open('day3.txt', 'r') as fp:
-	for line in fp:
-		ogen.append(line)
-		co2.append(line)
-		for i, c in enumerate(line):
-			if c == "1":
-				count[i] += 1
-			n += 1
-c = count[0]
+def get_data(input_file):
+    bin_list = []
+    bin_dict = {}
+    for i in range(12):
+        bin_dict[i] = []
+    
+    with open(input_file, "r") as f:
+        x = 0
+        for line in f:
+            for digit in range(len(line.strip())):
+                bin_dict[digit].append(line[digit])
+            x += 1
+            bin_list.append(line.strip())
 
-for i in range(0,5):
-	n = len(ogen)
-	if len(ogen) == 1:
-		break
-	else:
-		if c < n - c:
-			ogen_iterator = filter(lambda x: (x[i] == "1"), ogen)
-			ogen = list(ogen_iterator)
-		else:
-			ogen_iterator = filter(lambda x: (x[i] == "0"), ogen)
-			ogen = list(ogen_iterator)
+    return bin_dict, bin_list
 
-		c = 0
-		n = 0
-		for o in ogen:
-			if o[i+1] == "1":
-				c += 1
-			n += 1
+def solve(bin_dict, bin_list):
+    # Part 1:
+    most_common = []
+    for i in range(len(bin_dict)):
+        if bin_dict[i].count('0') >= bin_dict[i].count('1'):
+            most_common.append('0')
+        else:
+            most_common.append('1')
+
+    print(f"Part 1: {int(''.join(most_common), 2) * int(''.join(most_common).replace('0', 'x').replace('1', '0').replace('x', '1'), 2)}")
+
+    # Part 2:
+    oxygen_valid_numbers = bin_list[:]
+    co2_valid_numbers = bin_list[:]
+    
+    for column in range(len(oxygen_valid_numbers[0])):
+        column_bits_oxygen = [i[column] for i in oxygen_valid_numbers]
+        column_bits_co2 = [i[column] for i in co2_valid_numbers]
+
+        if column_bits_oxygen.count('1') >= column_bits_oxygen.count('0'):
+            oxygen_valid_numbers = [i for i in oxygen_valid_numbers if i[column] == '1']
+        else:
+            oxygen_valid_numbers = [i for i in oxygen_valid_numbers if i[column] == '0']
+        
+        if column_bits_co2.count('1') >= column_bits_co2.count('0'):
+            co2_valid_numbers = [i for i in co2_valid_numbers if i[column] == '0']
+        else:
+            co2_valid_numbers = [i for i in co2_valid_numbers if i[column] == '1']
+
+        if len(oxygen_valid_numbers) == 1:
+            break
+        
+        if len(co2_valid_numbers) == 1:
+            break
+
+    print(f"Part 2: {int(oxygen_valid_numbers[0], 2) * int(co2_valid_numbers[0], 2)}")
 
 
-print(1973 * int(ogen[0],2))
-# gamma = "".join(["1" if x > 500 else "0" for x in count])
-
-# epsilon = "".join(["1" if x < 500 else "0" for x in count])
-
-# print(gamma)
-# print(epsilon)
-# print(int(gamma,2) * int(epsilon, 2))
+if __name__ == '__main__':
+    d, l = get_data("day3.txt")
+    solve(d, l)
+    
