@@ -3,9 +3,7 @@ import queue
 count = 0
 q = queue.Queue()
 with open('day1.txt', 'r') as fp:
-	last = None
-	tot = 0
-	out = 0
+	
 	for line in fp:
 		cur = int(line)
 		q.put(cur)
